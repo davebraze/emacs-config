@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: R inline
+# key: =ri
+# --
+\`r $0 \` 

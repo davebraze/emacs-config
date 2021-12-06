@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: Package Table
+# key: =pt
+# --
+$0
+
+\`\`\`{r r-package-tab, include=TRUE}
+package_tab <-
+    sessioninfo::package_info() %>%
+    unclass() %>%
+    as_tibble() %>%
+    filter(attached == TRUE) %>%
+    select(package, ondiskversion, date) %>%
+    rename(version = ondiskversion)
+caption <- "R packages used in this report."
+package_tab %>%
+    format_table(caption=caption, out_type=out_type)
+\`\`\`

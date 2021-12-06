@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: R function
+# key: =fn
+# --
+${1:Name} <- function(${2:variables}) {
+
+$0
+
+}
