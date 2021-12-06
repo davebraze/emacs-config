@@ -55,6 +55,8 @@
 (set-default-coding-systems 'utf-8)
 
 ;;;; pre-load some stuff ;;;;
+
+;; set up the package manager (install & update packages)
 (require 'package)		  ; package manager
 
 (package-initialize)              ; add ~/.emacs.d/elpa/ to load-path
@@ -64,6 +66,15 @@
 	     '("melpa" . "https://melpa.org/packages/"))
 ;; The package manager installs packages to directories under "~/.emacs.d/elpa/"
 ;; and adds the new package directory to load-path.
+
+;; ;; set up to load and configure packages
+;; ;; use-package to simplify the config file
+;;   (unless (package-installed-p 'use-package)
+;;     (package-refresh-contents)
+;;     (package-install 'use-package))
+;;   (require 'use-package)
+;;   (setq use-package-always-ensure 't)
+
 
 ;; (server-start)			  ; use emacsclientw.exe for file associations and 'sendto' menu.
 
@@ -275,10 +286,10 @@
 
 ;;;; projectile ;;;;
 (require 'projectile)
-(setq projectile-indexing-method 'hybrid  ; could also try 'alien for max speed
-      projectile-sort-order 'recentf	  ; sort by recency of access
-      projectile-use-git-grep t)          ; git must be installed and on PATH
-
+(setq projectile-indexing-method     'hybrid  ; could also try 'alien for max speed
+      projectile-sort-order          'recentf ; sort by recency of access
+      projectile-use-git-grep        t)        ; git must be installed and on PATH
+      
 ;;;; dired+ by way of el-get
 ;; Mostly I use the emacs lisp package manager (elpy) for, well, managing packages.
 ;; But not all packages are available that way. el-get may be helpful in those cases.
@@ -307,16 +318,17 @@
  	  #'(lambda ()
  	      (setq ls-lisp-use-insert-directory-program t ;; force use of external ls (not ls-lisp)
 		    dired-x-hands-off-my-keys t
-		    dired-listing-switches "-alh --group-directories-first --dired")
+		    dired-listing-switches "-alhoD --group-directories-first"
+		    )
  	      (require 'dired-x)
 	      (require 'dired+)
  	      (message "dired-load-hook done")))
 
-(add-hook 'dired-mode-hook
+(add-hook 'dired-mode-hook ;; Run at the end of 'dired-mode
 	  #'(lambda ()
  	      (message "dired-mode-hook done")))
 
-(add-hook 'dired-after-readin-hook
+(add-hook 'dired-after-readin-hook ;; Run when new dired buffer started
  	  #'(lambda ()
  	      (hl-line-mode 1)
  	      (message "dired-after-readin-hook done")))
