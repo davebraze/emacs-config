@@ -30,19 +30,22 @@
                      gcs-done)))
 
 (setq inhibit-startup-message        t
+      initial-scratch-message        ""
+      column-number-mode             nil
+      size-indication-mode           nil
+      auto-image-file-mode           t
       visible-bell                   t
-;;      gnus-inhibit-startup-message   t
-;;      search-exit-option             nil	  ; require ESC to end an incremental search
+      show-paren-mode                t
       search-highlight               t
       scroll-conservatively          200          ; minimize scrolling to keep point on screen
       sort-fold-case                 t            ; Do NOT sort uppercase before lower case
+      case-fold-search               t
       line-number-display-limit      nil
       compilation-scroll-output      t		  ; force compilation window to scroll automatically
       fill-column                    5000
-      suggest-key-bindings           t            ; always remind me about kbd shortcuts
+      suggest-key-bindings           5            ; always remind me about kbd shortcuts (5 seconds)
       gnuserv-frame                  (selected-frame) ; open files in existing frame
       next-line-add-newlines         nil	  ; don't add newlines if cursor goes past last line
-      column-number-mode             t		  ; show column numbers in mode line
       highlight-nonselected-windows  nil
       eol-mnemonic-dos               "DOS"
       eol-mnemonic-unix              "Unix"
@@ -64,6 +67,8 @@
              '("elpy" . "http://jorgenschaefer.github.io/packages/"))
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/"))
 ;; The package manager installs packages to directories under "~/.emacs.d/elpa/"
 ;; and adds the new package directory to load-path.
 
@@ -75,11 +80,12 @@
 ;;   (require 'use-package)
 ;;   (setq use-package-always-ensure 't)
 
-
 ;; (server-start)			  ; use emacsclientw.exe for file associations and 'sendto' menu.
+;; set emacsclient to run 
 
 (tool-bar-mode -1)  ;; no toolbar
 (menu-bar-mode -1)  ;; no menubar
+(set-fringe-mode 10);; extra fringe
 
 ;; control minibuffer completion behavior. See complete.el
 (setq PC-meta-flag nil)
@@ -136,6 +142,7 @@
                     :foreground "black"
                     :background "darkgreen"
                     :box '(:line-width 1 :style released-button))
+(require 'diminish)  ;; use diminish to keep the mode line clean
 
 ;; ; A long font name has the following form. Change the value of HEIGHT to change font size.
 ;; ; look in emacs info node 'font X' for details:
@@ -176,13 +183,17 @@
 ;;;;; completion for complex keystrokes
 (require 'which-key)		  
 (which-key-mode 1)
+(diminish 'which-key-mode)
 
 ;;;;; use ace-window instead of other-window
 (require 'ace-window)
 (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-      aw-minibuffer-flag t)
+      aw-minibuffer-flag t
+;;      aw-scope "visible frames"
+      )
 (global-unset-key (kbd "C-x o"))
 (global-set-key (kbd "M-o") 'ace-window)
+
 
 ;;;;; multi cursor functionality
 (require 'multiple-cursors)
@@ -212,24 +223,26 @@
 (setq ispell-program-name
       (locate-file "hunspell"
 		   exec-path exec-suffixes 'file-executable-p))
+
 ;; Typically access ispell by way of flyspell-mode
 ;; Flyspell Bindings:
 ;; M-$: correct words (using Ispell).
 ;; C-M-i: automatically correct word.
 ;; C-;: automatically correct the last misspelled word.
 ;; M-x flyspell-correct-word (or down-mouse-2): popup correct words.
+(setq flyspell-issue-message-flag nil) ;; for efficiency
 
 ;;;;; company-mode
 ;; Provides context sensitive text expansion.
 (setq company-selection-wrap-around t
       company-tooltip-align-annotations t
       company-idle-delay 0.1
-      company-minimum-prefix-length 2
+      company-minimum-prefix-length 3
       company-tooltip-limit 10)
-(global-company-mode)
+;; (global-company-mode) ;; use hooks to enable per major mode 
 
 ;;;;; yasnippet
-;; Avoid using snippet keywords that might trigger expansion by company-mode.
+;; Avoid using snippet keywords that might trigger expansion by company-mode or similar.
 (require 'yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
 (yas-global-mode t)
@@ -265,13 +278,42 @@
 (require 'csv-mode)
 
 ;;;;; use ibuffer instead of list-buffers
-;; (global-unset-key (kbd "C-x C-b"))
-;; (global-set-key (kbd "C-x C-b") 'ibuffer)
+;; maybe take a look at packages 'bufler or 'eproject
 (define-key (current-global-map) [remap list-buffers] 'ibuffer)
+(setq ibuffer-expert t
+      ibuffer-show-empty-filter-groups nil)
 (add-hook 'ibuffer-hook
  	  #'(lambda ()
  	      (hl-line-mode 1)
  	      (message "ibuffer-hook done")))
+
+;; (setq ibuffer-saved-filter-groups
+;;       ;; Put project groups first.
+;;       ;; Figure out a way that a buffer can belong to more than one group.
+;;   (quote (("default"      
+;;             ("TSS Project"
+;; 	     (filename . "C:/DATA/braze/01 - work in progress/10 - Consulting/07-southport-school/"))
+;; 	    ("Data Work" (or
+;; 			  (mode . ess-mode)
+;; 			  (filename . "(R run)")))
+;;             ("Org" ;; all org-related buffers
+;;               (mode . org-mode))
+;;             ("ELisp" ;; all org-related buffers
+;;               (mode . emacs-lisp-mode))
+;; 	    ("Magit"
+;; 	     (mode . magit-mode))
+;; 	    ("Help" (or
+;; 		     (name . "\*Help\*")
+;; 		     (name . "\*Apropos\*")
+;; 		     (name . "\*info\*")))
+;; 	    ))))
+
+  
+(add-hook 'ibuffer-mode-hook
+	  (lambda ()
+	    (ibuffer-auto-mode 1)
+	    (ibuffer-switch-to-saved-filter-groups "default"))
+	  )
 
 ;;;; delim-col
 ;; useful for formatting data copied from spreadsheet and pasted into R scripts
@@ -290,48 +332,64 @@
       projectile-sort-order          'recentf ; sort by recency of access
       projectile-use-git-grep        t)        ; git must be installed and on PATH
       
-;;;; dired+ by way of el-get
-;; Mostly I use the emacs lisp package manager (elpy) for, well, managing packages.
-;; But not all packages are available that way. el-get may be helpful in those cases.
-;; right now, I'm installing it to ease installing dired+. I'm installing el-get using
-;; itself by way of elpy, pasting this code (found here:
-;; https://emacs.stackexchane.com/questions/38553/dired-missing-from-melpa).
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-      "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-(el-get 'sync)
+;; ;;;; install dired+ by way of el-get
+;; ;; Mostly I use the emacs lisp package manager (elpy) for, well, managing packages.
+;; ;; But not all packages are available that way. el-get may be helpful in those cases.
+;; ;; right now, I'm installing it to ease installing dired+. I'm installing el-get using
+;; ;; itself by way of elpy, pasting this code (found here:
+;; ;; https://emacs.stackexchane.com/questions/38553/dired-missing-from-melpa).
+;; (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+;; (unless (require 'el-get nil 'noerror)
+;;   (with-current-buffer
+;;       (url-retrieve-synchronously
+;;       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+;;     (goto-char (point-max))
+;;     (eval-print-last-sexp)))
+;; (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+;; (el-get 'sync)
 
 ;;
 ;; then,
 ;; 1. restart emacs
 ;; 2. M-x el-get-install dired+
 
-;; '(ls-lisp-use-insert-directory-program t)
-
 ;;;; dired ;;;
-(add-hook 'dired-load-hook
+(setq diredp-hide-details-initially-flag nil
+      dired-auto-revert-buffer t
+      ls-lisp-use-insert-directory-program t ;; force use of external ls (not ls-lisp)
+      dired-listing-switches "-alhoD --group-directories-first"
+      )
+
+(add-hook 'dired-load-hook ;; Run after loading dired package 
  	  #'(lambda ()
- 	      (setq ls-lisp-use-insert-directory-program t ;; force use of external ls (not ls-lisp)
-		    dired-x-hands-off-my-keys t
-		    dired-listing-switches "-alhoD --group-directories-first"
-		    )
- 	      (require 'dired-x)
-	      (require 'dired+)
+	      (setq dired-x-hands-off-my-keys t)
+ 	      (load 'dired-x)
+	      (load 'dired+)
  	      (message "dired-load-hook done")))
 
 (add-hook 'dired-mode-hook ;; Run at the end of 'dired-mode
 	  #'(lambda ()
+	      'dired-extra-startup
+	      ;; Binding to open file in external program. Default is "W"; this is better.
+	      (local-set-key (kbd "C-<return>") 'browse-url-of-dired-file) 
  	      (message "dired-mode-hook done")))
 
-(add-hook 'dired-after-readin-hook ;; Run when new dired buffer started
+ ;; '(dired-mode-hook
+ ;;   (quote
+ ;;    ((lambda nil
+ ;;       (message "dired-mode-hook done"))
+ ;;     diredp-nb-marked-in-mode-name diredp--set-up-font-locking dired-extra-startup)))
+
+(add-hook 'dired-after-readin-hook ;; Run each time a file or directory is read by dired
  	  #'(lambda ()
  	      (hl-line-mode 1)
  	      (message "dired-after-readin-hook done")))
+
+;; Some under-used dired keys
+;; w: copy filename to kill ring.
+;; W: open file in external program
+;; j: jump to file
+;; y: file type and summary
 
 ;;;; emacs-lisp-mode ;;;
 (add-hook 'emacs-lisp-mode-hook
@@ -341,27 +399,36 @@
 		    fill-column 5000
 		    truncate-lines nil)
 	      (message "emacs-lisp-mode-hook done")))
+(diminish 'eldoc-mode)
+
+;;;;; enable linting
+;; I can't get either flymake or flycheck to work.
+;; The problem with both is in setting non-default linting rules.
+;;(global-flycheck-mode)
 
 ;;;; ESS-mode ;;;
-(setq ess-use-eldoc                  'script-only
+(setq ess-use-eldoc                  t
+      ess-eldoc-show-on-symbol       nil
+      ess-use-eldoc                 'script-only
       inferior-ess-own-frame         nil
       inferior-ess-same-window       nil
       ess-help-own-frame             'one          ; all ess help goes to same dedicated frame
       ess-ask-for-ess-directory      nil
       ess-r-versions                 '("R-1" "R-2" "R-3" "R-4" "R-devel" "R-patched")
       ess-bugs-batch-method          'dos
-      ess-describe-at-point-method   'tooltip
+      ess-describe-at-point-method   nil
       ess-developer-packages         '("FDBeye" "FDB1" "FDButils")
       ess-directory-containing-R     "C:/Program Files/"
       inferior-ess-r-program         "c:/Program Files/R/R-4.1.0/bin/x64/rterm.exe"
-      ess-eval-visibly               t
+      ess-eval-visibly               nil
+      ess-use-company                t
+      ess-use-flymake                nil ; problems with setting up non-default linter settings
       ess-funcmenu-use-p             t
       ess-history-file               nil
       ess-keep-dump-files            "always"
       ess-roxy-tags-param           '("author" "aliases" "concept" "description" "details" "examples" "format" "keywords" "method" "exportMethod" "name" "note" "param" "include" "references" "return" "seealso" "source" "docType" "title" "TODO" "usage" "import" "exportClass" "exportPattern" "S3method" "inheritParams" "importFrom" "importClassesFrom" "importMethodsFrom" "useDynLib" "rdname" "section" "slot")
       ess-swv-processor             'knitr
       ess-tab-always-indent         nil
-      ess-use-eldoc                 'script-only
       ess-user-full-name            "Dave Braze"
       ess-smart-S-assign-key        nil)
 
@@ -370,11 +437,12 @@
               (local-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
               (local-set-key (vector '(control ?:)) 'comment-dwim)
+	      (company-mode) ;; Is this needed if ess-use-company is set?
 	      (yas-minor-mode-on)
               (font-lock-mode t)
 	      (electric-pair-local-mode)
               (setq truncate-lines                 t
-		    ess-nuke-trailing-whitespace-p nil ; leaving trailing whitespace alone. Important for Rmarkdown files.
+		    ess-nuke-trailing-whitespace-p nil ;; leaving trailing whitespace alone. Important for Rmarkdown files.
                     fill-column                    5000
                     comment-column                 40)
               (message "ess-mode-hook done")))
@@ -384,6 +452,34 @@
 	  (electric-pair-local-mode)
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
+
+;;;;; setup poly mode for use with ESS.
+(require 'polymode)
+(require 'poly-markdown)
+;; (require 'poly-R)
+(add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+
+;; See if it makes sense to arrange windows
+;; (setq display-buffer-alist
+;;       `(("*R Dired"
+;;          (display-buffer-reuse-window display-buffer-in-side-window)
+;;          (side . right)
+;;          (slot . -1)
+;;          (window-width . 0.33)
+;;          (reusable-frames . nil))
+;;         ("*R"
+;;          (display-buffer-reuse-window display-buffer-at-bottom)
+;;          (window-width . 0.35)
+;;          (reusable-frames . nil))
+;;         ("*Help"
+;;          (display-buffer-reuse-window display-buffer-in-side-window)
+;;          (side . right)
+;;          (slot . 1)
+;;          (window-width . 0.33)
+;;          (reusable-frames . nil))))
+
 
 ;; If using the Goulet Emacs for Windows distro, be sure to edit 
 ;; site-start.el and comment out the line "(require 'ess-site)". 
@@ -414,10 +510,10 @@
 ;; (msb-mode)
 
 ;;;;  text-mode ;;;
-;; (toggle-text-mode-auto-fill)			 ; always auto-fill in text mode
 (add-hook 'text-mode-hook
 	  #'(lambda ()
 	      (visual-line-mode)
+	      (diminish 'visual-line-mode)
 	      (setq truncate-lines nil
 		    fill-column 5000)
 	      (local-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
@@ -473,7 +569,7 @@
     (if (display-buffer-other-frame current)
         (quit-restore-window selected))))
 
-;; ;;;;;; Key Maps ;;;;;;
+;; ;;;;;; Global Key Bindings ;;;;;;
 
 ;;; Keys ;;;
 ;; CTL Keys ;;
@@ -496,13 +592,13 @@
 (global-set-key (vector '(meta right)) 'enlarge-window-horizontally)
 (global-set-key (vector '(meta left)) 'shrink-window-horizontally)
 
-;; ctl-x-map ;;
+;; ctl-x prefix ;;
 (global-set-key (vector '(control x) ?l) 'recenter)	; current line to screen center
 (global-set-key (vector '(control x) '(control m) ?u) 'set-buffer-eol-conversion-unix)
 (global-set-key (vector '(control x) '(control m) ?d) 'set-buffer-eol-conversion-dos)
 (global-set-key (vector '(control x) '(control m) ?m) 'set-buffer-eol-conversion-mac)
 
-;; ctl-c prefixed ;;
+;; ctl-c prefix ;;
 ; should fix all the case changing stuff to ensure that we are at the beginning of a word.
 (global-set-key (kbd "C-c d") 'downcase-word)  
 (global-set-key (kbd "C-c u") 'upcase-word)
@@ -514,10 +610,8 @@
 (global-set-key (vector 'f11) 'compile)
 (global-set-key (vector 'f12) 'recompile)
 
-
-
 ;;; Custom Section ;;;
-
+ 
 (put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -526,35 +620,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auto-image-file-mode t)
- '(case-fold-search t)
- '(column-number-mode t)
- '(dired-after-readin-hook
-   (quote
-    ((lambda nil
-       (hl-line-mode 1)
-       (message "dired-after-readin-hook done"))
-     diredp-nb-marked-in-mode-name diredp-hide/show-details diredp-refontify-buffer dired-omit-expunge)))
- '(dired-load-hook
-   (quote
-    ((lambda nil
-       (require
-	(quote dired-x))
-       (setq dired-x-hands-off-my-keys t)
-       (message "dired-load-hook done")))))
- '(dired-mode-hook
-   (quote
-    ((lambda nil
-       (message "dired-mode-hook done"))
-     diredp-nb-marked-in-mode-name diredp--set-up-font-locking dired-extra-startup)))
- '(diredp-hide-details-initially-flag nil)
- '(display-time-mode t)
- '(ediff-merge-split-window-function (quote split-window-vertically))
- '(ediff-split-window-function (quote split-window-vertically))
  '(elpy-modules
    (quote
     (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-highlight-indentation elpy-module-yasnippet elpy-module-sane-defaults)))
- '(explicit-shell-file-name nil)
  '(face-font-family-alternatives
    (quote
     (("Monospace" "DejaVu Sans Mono" "courier" "fixed")
@@ -562,39 +630,15 @@
      ("courier" "Lucida Sans Typewriter" "fixed")
      ("Sans Serif" "helv" "helvetica" "arial" "fixed")
      ("helv" "helvetica" "arial" "fixed"))))
- '(font-lock-verbose nil)
- '(initial-buffer-choice t)
- '(initial-scratch-message nil)
- '(ls-lisp-dirs-first t)
- '(magit-log-section-commit-count 15)
- '(magit-status-margin (quote (t "%Y-%m-%d" magit-log-margin-width nil 18)))
- '(org-support-shift-select t)
- '(package-archive-priorities (quote (("gnu" . 10) ("melpa" . 8) ("elpy" . 1))))
- '(package-archives
-   (quote
-    (("melpa" . "https://melpa.org/packages/")
-     ("gnu" . "http://elpa.gnu.org/packages/")
-     ("elpy" . "https://jorgenschaefer.github.io/packages/"))))
  '(package-check-signature (quote allow-unsigned))
  '(package-selected-packages
    (quote
-    (stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
- '(python-shell-buffer-name "Python")
- '(python-shell-interpreter "python")
- '(safe-local-variable-values
-   (quote
-    ((whitespace-style face tabs spaces trailing lines space-before-tab::space newline indentation::space empty space-after-tab::space space-mark tab-mark newline-mark))))
+    (diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
  '(save-place t nil (saveplace))
- '(sentence-end-double-space nil)
- '(show-paren-mode t)
- '(size-indication-mode t)
  '(sql-mysql-program "C:/Program Files/MySQL/MySQL Server 5.5/bin/mysql")
  '(sql-password "")
  '(sql-product (quote mysql))
- '(sql-user "")
- '(tool-bar-mode nil)
- '(truncate-partial-width-windows nil)
- '(word-wrap nil))
+ '(sql-user ""))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

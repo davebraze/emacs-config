@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: Figure Reference
-# key: =fr
+# key: fr=
 # --
 \\@ref(fig:${1:ChunkName}) $0

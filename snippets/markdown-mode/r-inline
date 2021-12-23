@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: R inline
-# key: =ri
+# key: ri=
 # --
 \`r $0 \` 

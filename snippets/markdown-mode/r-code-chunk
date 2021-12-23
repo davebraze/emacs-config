@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: R code chunk
-# key: =rc
+# key: rc=
 # --
 
 \`\`\`{r ${1:ChunkName}}
