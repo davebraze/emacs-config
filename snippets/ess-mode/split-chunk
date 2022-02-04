@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: split R chunk
+# key: rcs=
+# --
+
+\`\`\`
+
+\`\`\`{r ${1:chunkName}}
+
+$0
