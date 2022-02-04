@@ -31,21 +31,22 @@
 
 (setq inhibit-startup-message        t
       initial-scratch-message        ""
+      insert-default-directory       nil     ; suppress default directory in minibuffer find-file prompts
       column-number-mode             nil
       size-indication-mode           nil
       auto-image-file-mode           t
       visible-bell                   t
       show-paren-mode                t
       search-highlight               t
-      scroll-conservatively          200          ; minimize scrolling to keep point on screen
-      sort-fold-case                 t            ; Do NOT sort uppercase before lower case
+      scroll-conservatively          200     ; minimize scrolling to keep point on screen
+      sort-fold-case                 t       ; Do NOT sort uppercase before lower case
       case-fold-search               t
       line-number-display-limit      nil
-      compilation-scroll-output      t		  ; force compilation window to scroll automatically
+      compilation-scroll-output      t	     ; force compilation window to scroll automatically
       fill-column                    5000
-      suggest-key-bindings           5            ; always remind me about kbd shortcuts (5 seconds)
+      suggest-key-bindings           5       ; always remind me about kbd shortcuts (5 seconds)
       gnuserv-frame                  (selected-frame) ; open files in existing frame
-      next-line-add-newlines         nil	  ; don't add newlines if cursor goes past last line
+      next-line-add-newlines         nil     ; don't add newlines if cursor goes past last line
       highlight-nonselected-windows  nil
       eol-mnemonic-dos               "DOS"
       eol-mnemonic-unix              "Unix"
@@ -72,6 +73,14 @@
 ;; The package manager installs packages to directories under "~/.emacs.d/elpa/"
 ;; and adds the new package directory to load-path.
 
+;; if package archive signature check fails, see
+;; https://emacs.stackexchange.com/questions/233/how-to-proceed-on-package-el-signature-check-failure
+;;
+;; 1. set package-check-signature to nil, e.g. M-: (setq package-check-signature nil) RET
+;; 2. download the package gnu-elpa-keyring-update and run the function with the same name, e.g. M-x package-install RET gnu-elpa-keyring-update RET.
+;; 3. reset package-check-signature to the default value allow-unsigned, e.g. M-: (setq package-check-signature "allow-unsigned") RET
+;; (setq package-check-signature nil)
+
 ;; ;; set up to load and configure packages
 ;; ;; use-package to simplify the config file
 ;;   (unless (package-installed-p 'use-package)
@@ -85,7 +94,7 @@
 
 (tool-bar-mode -1)  ;; no toolbar
 (menu-bar-mode -1)  ;; no menubar
-(set-fringe-mode 10);; extra fringe
+(set-fringe-mode 15);; extra fringe
 
 ;; control minibuffer completion behavior. See complete.el
 (setq PC-meta-flag nil)
@@ -162,8 +171,13 @@
 ;; o see https://github.com/daviwil/emacs-from-scratch/blob/210e517353abf4ed669bc40d4c7daf0fabc10a5c/Emacs.org#debugging-with-dap-mode for ideas on org-mode configuration
 ;; o some interesting config stuff here: https://config.daviwil.com/emacs
 
-(require 'uniquify)		  ; ensure unique mode lines
-(setq uniquify-buffer-name-style 'post-forward) 
+;;;;; improved completion framework
+(selectrum-mode +1)
+;; need to tune up selectrum-minibuffer-map
+
+;;; also consider
+(selectrum-prescient-mode +1)
+(prescient-persist-mode +1)
 
 ;;;;; improved help buffers (the jury is still out)
 ;; need to set up key bindings
@@ -245,7 +259,7 @@
 ;; Avoid using snippet keywords that might trigger expansion by company-mode or similar.
 (require 'yasnippet)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-(yas-global-mode t)
+(yas-global-mode t) ;; maybe try setting yasnippets to run per major mode?
 
 ;;;; org mode extensions
 ;;;; ox-pandoc
@@ -327,11 +341,16 @@
       delimit-columns-extra t)
 
 ;;;; projectile ;;;;
-(require 'projectile)
-(setq projectile-indexing-method     'hybrid  ; could also try 'alien for max speed
-      projectile-sort-order          'recentf ; sort by recency of access
-      projectile-use-git-grep        t)        ; git must be installed and on PATH
-      
+(setq projectile-indexing-method        'hybrid   ; could also try 'alien for max speed
+      projectile-sort-order             'recently-active ; sort by recency
+      projectile-use-git-grep           t         ; git must be installed and on PATH
+;;      projectile-completion-system      'selectrum
+      projectile-switch-project-action  'projectile-dired)
+(setq projectile-project-search-path '("C:/DATA/braze/01 - work in progress/10 - Consulting"
+				       "C:/DATA/braze/02 - work/40 - coding-dev/R/development"))
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
+
 ;; ;;;; install dired+ by way of el-get
 ;; ;; Mostly I use the emacs lisp package manager (elpy) for, well, managing packages.
 ;; ;; But not all packages are available that way. el-get may be helpful in those cases.
@@ -412,7 +431,7 @@
       ess-use-eldoc                 'script-only
       inferior-ess-own-frame         nil
       inferior-ess-same-window       nil
-      ess-help-own-frame             'one          ; all ess help goes to same dedicated frame
+      ess-help-own-frame             'one  ; all ess help goes to same dedicated frame
       ess-ask-for-ess-directory      nil
       ess-r-versions                 '("R-1" "R-2" "R-3" "R-4" "R-devel" "R-patched")
       ess-bugs-batch-method          'dos
@@ -436,7 +455,7 @@
           #'(lambda ()
               (local-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
-              (local-set-key (vector '(control ?:)) 'comment-dwim)
+;;              (local-set-key (vector '(control ?:)) 'comment-dwim)
 	      (company-mode) ;; Is this needed if ess-use-company is set?
 	      (yas-minor-mode-on)
               (font-lock-mode t)
@@ -504,7 +523,8 @@
 (require 'markdown-mode)
 (add-hook 'markdown-mode-hook
 	  #'(lambda ()
-	      (yas-minor-mode-on)))
+;;	      (yas-minor-mode-on)
+	      ))
 
 ;;;; msb ;;;; mouse buffer menu minor mode
 ;; (msb-mode)
@@ -512,7 +532,7 @@
 ;;;;  text-mode ;;;
 (add-hook 'text-mode-hook
 	  #'(lambda ()
-	      (visual-line-mode)
+	      (visual-line-mode) ;; vlm disables indication of line wrapping in the fringes
 	      (diminish 'visual-line-mode)
 	      (setq truncate-lines nil
 		    fill-column 5000)
@@ -633,7 +653,7 @@
  '(package-check-signature (quote allow-unsigned))
  '(package-selected-packages
    (quote
-    (diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
+    (selectrum selectrum-prescient diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
  '(save-place t nil (saveplace))
  '(sql-mysql-program "C:/Program Files/MySQL/MySQL Server 5.5/bin/mysql")
  '(sql-password "")
