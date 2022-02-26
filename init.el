@@ -18,6 +18,9 @@
 ;;    the '-t' switch.)
 ;; 4. Should also add an emacs client shortcut to Window's Explorer right click menu...
 
+;; how many packages do i have installed?
+;; (length package-alist)
+
 ;;;;; UI customization
 
 ;;;; set some behaviors  ;;;;;;
@@ -179,6 +182,10 @@
 (selectrum-prescient-mode +1)
 (prescient-persist-mode +1)
 
+;;;;; Add annotations to minibuffer completions
+(marginalia-mode 1)
+;; set "M-A" to marginalia-cycle in minibuffer-local-map
+
 ;;;;; improved help buffers (the jury is still out)
 ;; need to set up key bindings
 (require 'helpful)		  
@@ -194,8 +201,9 @@
 (set-face-background 'my-hl-line-face "cornsilk2")
 (setq hl-line-face 'my-hl-line-face)
 
-;;;;; completion for complex keystrokes
+;;;;; completion for keystrokes
 (require 'which-key)		  
+(setq which-key-idle-delay 0.5)
 (which-key-mode 1)
 (diminish 'which-key-mode)
 
@@ -344,10 +352,12 @@
 (setq projectile-indexing-method        'hybrid   ; could also try 'alien for max speed
       projectile-sort-order             'recently-active ; sort by recency
       projectile-use-git-grep           t         ; git must be installed and on PATH
-;;      projectile-completion-system      'selectrum
-      projectile-switch-project-action  'projectile-dired)
+      projectile-completion-system      'default
+      projectile-switch-project-action  'projectile-dired
+      projectile-auto-discover          nil)
 (setq projectile-project-search-path '("C:/DATA/braze/01 - work in progress/10 - Consulting"
-				       "C:/DATA/braze/02 - work/40 - coding-dev/R/development"))
+				       "C:/DATA/braze/02 - work/40 - coding-dev/R/development"
+				       ("c:/DATA/braze/02 - work/45 - public-data" . 1)))
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 
@@ -473,9 +483,9 @@
 	  (message "ess-inferior-mode-hook done")))
 
 ;;;;; setup poly mode for use with ESS.
-(require 'polymode)
+;; (require 'polymode)
 (require 'poly-markdown)
-;; (require 'poly-R)
+(require 'poly-R)
 (add-to-list 'auto-mode-alist '("\\.Snw" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rnw" . poly-noweb+r-mode))
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
@@ -630,7 +640,7 @@
 (global-set-key (vector 'f11) 'compile)
 (global-set-key (vector 'f12) 'recompile)
 
-;;; Custom Section ;;;
+;;; Custom Section (Edit with caution) ;;;
  
 (put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -653,7 +663,7 @@
  '(package-check-signature (quote allow-unsigned))
  '(package-selected-packages
    (quote
-    (selectrum selectrum-prescient diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
+    (marginalia selectrum selectrum-prescient diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
  '(save-place t nil (saveplace))
  '(sql-mysql-program "C:/Program Files/MySQL/MySQL Server 5.5/bin/mysql")
  '(sql-password "")
