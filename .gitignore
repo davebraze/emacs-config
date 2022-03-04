@@ -6,6 +6,7 @@ eshell/
 image-dired/
 server/
 transient/
+var/**
 
 *~
 .mc-lists.el
@@ -13,3 +14,4 @@ network-security.data
 projectile-bookmarks.eld
 projectile.cache
 recentf
+.#recentf
