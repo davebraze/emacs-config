@@ -98,6 +98,7 @@
 (tool-bar-mode -1)  ;; no toolbar
 (menu-bar-mode -1)  ;; no menubar
 (set-fringe-mode 15);; extra fringe
+;; (global-display-line-numbers-mode) 
 
 ;; control minibuffer completion behavior. See complete.el
 (setq PC-meta-flag nil)
@@ -154,7 +155,7 @@
                     :foreground "black"
                     :background "darkgreen"
                     :box '(:line-width 1 :style released-button))
-(require 'diminish)  ;; use diminish to keep the mode line clean
+(require 'diminish)  ;; use diminish to help keep the mode line clean
 
 ;; ; A long font name has the following form. Change the value of HEIGHT to change font size.
 ;; ; look in emacs info node 'font X' for details:
@@ -433,7 +434,10 @@
 ;;;;; enable linting
 ;; I can't get either flymake or flycheck to work.
 ;; The problem with both is in setting non-default linting rules.
-;;(global-flycheck-mode)
+;;(global-flycheck-mode t)
+
+
+
 
 ;;;; ESS-mode ;;;
 (setq ess-use-eldoc                  t
@@ -450,7 +454,7 @@
       ess-directory-containing-R     "C:/Program Files/"
       inferior-ess-r-program         "c:/Program Files/R/R-4.1.0/bin/x64/rterm.exe"
       ess-eval-visibly               nil
-      ess-use-company                t
+      ess-use-company                'script-only
       ess-use-flymake                nil ; problems with setting up non-default linter settings
       ess-funcmenu-use-p             t
       ess-history-file               nil
@@ -466,7 +470,7 @@
               (local-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
 ;;              (local-set-key (vector '(control ?:)) 'comment-dwim)
-	      (company-mode) ;; Is this needed if ess-use-company is set?
+;; 	      (company-mode) ;; Is this needed if ess-use-company is set?
 	      (yas-minor-mode-on)
               (font-lock-mode t)
 	      (electric-pair-local-mode)
@@ -481,6 +485,22 @@
 	  (electric-pair-local-mode)
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
+
+## font-locking for R
+(setq ess-R-font-lock-keywords
+      '((ess-R-fl-keyword:keywords . t)
+	(ess-R-fl-keyword:constants . t)
+	(ess-R-fl-keyword:modifiers . t)
+	(ess-R-fl-keyword:fun-defs . t)
+	(ess-R-fl-keyword:assign-ops . t)
+	(ess-R-fl-keyword:%op% . t)
+	(ess-fl-keyword:fun-calls . t)
+	(ess-fl-keyword:numbers . t)
+	(ess-fl-keyword:operators)
+	(ess-fl-keyword:delimiters)
+	(ess-fl-keyword:=)
+	(ess-R-fl-keyword:F&T . t)))
+
 
 ;;;;; setup poly mode for use with ESS.
 ;; (require 'polymode)
@@ -650,6 +670,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("aa6638f0cd2ba2c68be03220ea73495116dc6f0b625405ede34087c1babb71ae" "7680e0d0fe93475fcdc514ae4df428245ab30c57114a753701e4fc09a15c949b" "413ba24c4f8a0d187a43d69dc7cbfd8b1d8782739422ba2368eb5f0893f0642a" default)))
  '(elpy-modules
    (quote
     (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-highlight-indentation elpy-module-yasnippet elpy-module-sane-defaults)))
@@ -660,10 +683,11 @@
      ("courier" "Lucida Sans Typewriter" "fixed")
      ("Sans Serif" "helv" "helvetica" "arial" "fixed")
      ("helv" "helvetica" "arial" "fixed"))))
+ '(global-font-lock-mode nil)
  '(package-check-signature (quote allow-unsigned))
  '(package-selected-packages
    (quote
-    (marginalia selectrum selectrum-prescient diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
+    (lab-themes plan9-theme professional-theme silkworm-theme autumn-light-theme soft-stone-theme marginalia selectrum selectrum-prescient diminish stripes helpful which-key multiple-cursors auto-complete ace-window git-modes gnu-elpa-keyring-update zones company git-commit helm-core ht hydra lv transient with-editor el-get w32-browser poly-R poly-ansible poly-erb poly-markdown poly-noweb poly-org poly-rst poly-ruby poly-slim poly-wdl polymode highlight-chars dired+ dired-quick-sort flx-ido ox-reveal ox-html5slide ox-ioslide ox-pandoc ox-tufte projectile magit lorem-ipsum helm elpy ego csv-mode)))
  '(save-place t nil (saveplace))
  '(sql-mysql-program "C:/Program Files/MySQL/MySQL Server 5.5/bin/mysql")
  '(sql-password "")
