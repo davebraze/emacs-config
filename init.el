@@ -3,7 +3,7 @@
 ;; Do the following steps to take advantage of emacs client/server mode on MS Windows.
 ;; Emacs initalization is done once when the server is started and so opening each new
 ;; client window becomes essentially instantaneous.
-;; 1. Add emacs 'bin' subdirectory to the system path environment variable.
+;; 1. Add emacs 'bin' subdirectory to the system path envi%ronment variable.
 ;;    Hit the 'Windows' key. Type 'Advanced System Settings' and hit <return>.
 ;;    Choose 'Environment Variables'. Go to 'System Variables', select 'Path', and
 ;;    click 'Edit...'. 
@@ -347,15 +347,18 @@
       delimit-columns-after " "
       delimit-columns-separator "\t"
       delimit-columns-format 'separator
-      delimit-columns-extra t)
+      delimit-columns-extra t
+      )
 
 ;;;; projectile ;;;;
 (setq projectile-indexing-method        'hybrid   ; could also try 'alien for max speed
       projectile-sort-order             'recently-active ; sort by recency
       projectile-use-git-grep           t         ; git must be installed and on PATH
-      projectile-completion-system      'default
+      projectile-completiqon-system      'default
       projectile-switch-project-action  'projectile-dired
-      projectile-auto-discover          nil)
+      projectile-auto-discover          nil
+      projectile-tags-command           "make tagfile"
+      )
 (setq projectile-project-search-path '("C:/DATA/braze/01 - work in progress/10 - Consulting"
 				       "C:/DATA/braze/02 - work/40 - coding-dev/R/development"
 				       ("c:/DATA/braze/02 - work/45 - public-data" . 1)))
@@ -453,7 +456,7 @@
       ess-developer-packages         '("FDBeye" "FDB1" "FDButils")
       ess-directory-containing-R     "C:/Program Files/"
       inferior-ess-r-program         "c:/Program Files/R/R-4.1.0/bin/x64/rterm.exe"
-      ess-eval-visibly               nil
+      ess-eval-visibly               'nowait   ; or nil
       ess-use-company                'script-only
       ess-use-flymake                nil ; problems with setting up non-default linter settings
       ess-funcmenu-use-p             t
@@ -463,7 +466,8 @@
       ess-swv-processor             'knitr
       ess-tab-always-indent         nil
       ess-user-full-name            "Dave Braze"
-      ess-smart-S-assign-key        nil)
+      ess-smart-S-assign-key        nil
+      )
 
 (add-hook 'ess-mode-hook
           #'(lambda ()
@@ -486,7 +490,7 @@
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
 
-## font-locking for R
+;; font-locking for R
 (setq ess-R-font-lock-keywords
       '((ess-R-fl-keyword:keywords . t)
 	(ess-R-fl-keyword:constants . t)
@@ -541,7 +545,6 @@
  	      (setq font-lock-maximum-decoration t)        ; Maximum colors
  	      (set-face-foreground font-lock-comment-face "darkcyan")
  	      (set-face-foreground font-lock-constant-face "darkred")))
-
 (global-font-lock-mode t)	      ; Turn on font-lock in all modes that support it
 
 ;; ;; ;;;; magit-mode ;;;
@@ -632,6 +635,7 @@
 (global-set-key (kbd "C-l") 'goto-line)
 (global-set-key (kbd "C->") 'text-scale-increase)
 (global-set-key (kbd "C-<") 'text-scale-decrease)
+(global-set-key (kbd "C-o") 'occur)
 
 ;; Meta Keys ;;
 (global-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
