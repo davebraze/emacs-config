@@ -6,7 +6,7 @@ eshell/
 image-dired/
 server/
 transient/
-var/**
+var/prescient-save.el
 
 *~
 .mc-lists.el
