@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: Table Reference
-# key: tr=
+# key: tr.
 # --
 \\@ref(tab:${1:ChunkName}) $0

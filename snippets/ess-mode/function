@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: R function
-# key: fn=
+# key: fn.
 # --
 ${1:Name} <- function(${2:variables}) {
 
