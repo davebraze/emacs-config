@@ -364,6 +364,8 @@
 				       ("c:/DATA/braze/02 - work/45 - public-data" . 1)))
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
+(define-key projectile-command-map (kbd "f") 'projectile-find-file-dwim)
+(define-key projectile-command-map (kbd "g") 'projectile-grep)
 
 ;; ;;;; install dired+ by way of el-get
 ;; ;; Mostly I use the emacs lisp package manager (elpy) for, well, managing packages.
