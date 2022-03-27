@@ -21,6 +21,15 @@
 ;; how many packages do i have installed?
 ;; (length package-alist)
 
+;; TODO: other packages to check out
+;; o embark
+;; o consult
+;; o company-prescient
+;; o hydra
+;; o windmove
+;; o find-dired; peep-dired
+
+
 ;;;;; UI customization
 
 ;;;; set some behaviors  ;;;;;;
@@ -60,6 +69,12 @@
 ;; coding system stuff
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
+
+(defmacro my-insert-unicode (unicode-name)
+  `(lambda () (interactive)
+     (insert-char (cdr (assoc-string ,unicode-name (ucs-names))))))
+(bind-key "C-x 8 s" (my-insert-unicode "ZERO WIDTH SPACE"))
+(bind-key "C-x 8 S" (my-insert-unicode "SNOWMAN"))
 
 ;;;; pre-load some stuff ;;;;
 
@@ -257,12 +272,13 @@
 
 ;;;;; company-mode
 ;; Provides context sensitive text expansion.
+;; TODO: look into company-prescient
 (setq company-selection-wrap-around t
       company-tooltip-align-annotations t
       company-idle-delay 0.1
       company-minimum-prefix-length 3
       company-tooltip-limit 10)
-;; (global-company-mode) ;; use hooks to enable per major mode 
+(global-company-mode) ;; maybe use hooks to enable per major mode 
 
 ;;;;; yasnippet
 ;; Avoid using snippet keywords that might trigger expansion by company-mode or similar.
@@ -628,12 +644,12 @@
 
 ;;; Keys ;;;
 ;; CTL Keys ;;
-(global-set-key (vector '(control I)) 'isearch-forward-regexp)
-(global-set-key (vector '(control s)) 'nonincremental-re-search-forward)
-(global-set-key (vector '(control r)) 'redraw-display)
-(global-set-key (vector '(control n)) 'rename-buffer)
-(global-set-key (vector '(control f)) 'forward-word)
-(global-set-key (vector '(control z)) 'undo)
+(global-set-key (kbd "C-I") 'isearch-forward-regexp)
+(global-set-key (kbd "C-s") 'nonincremental-re-search-forward)
+(global-set-key (kbd "C-r") 'redraw-display)
+(global-set-key (kbd "C-n") 'rename-buffer)
+(global-set-key (kbd "C-f") 'forward-word)
+(global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-l") 'goto-line)
 (global-set-key (kbd "C->") 'text-scale-increase)
 (global-set-key (kbd "C-<") 'text-scale-decrease)
@@ -647,6 +663,7 @@
 (global-set-key (vector '(meta down)) 'shrink-window)
 (global-set-key (vector '(meta right)) 'enlarge-window-horizontally)
 (global-set-key (vector '(meta left)) 'shrink-window-horizontally)
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
 
 ;; ctl-x prefix ;;
 (global-set-key (vector '(control x) ?l) 'recenter)	; current line to screen center
