@@ -73,8 +73,8 @@
 (defmacro my-insert-unicode (unicode-name)
   `(lambda () (interactive)
      (insert-char (cdr (assoc-string ,unicode-name (ucs-names))))))
-(bind-key "C-x 8 s" (my-insert-unicode "ZERO WIDTH SPACE"))
-(bind-key "C-x 8 S" (my-insert-unicode "SNOWMAN"))
+(global-set-key (kbd "C-x 8 s") (my-insert-unicode "ZERO WIDTH SPACE"))
+(global-set-key (kbd "C-x 8 S") (my-insert-unicode "SNOWMAN"))
 
 ;;;; pre-load some stuff ;;;;
 
