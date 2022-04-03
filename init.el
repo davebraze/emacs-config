@@ -278,7 +278,7 @@
       company-idle-delay 0.1
       company-minimum-prefix-length 3
       company-tooltip-limit 10)
-(global-company-mode) ;; maybe use hooks to enable per major mode 
+(global-company-mode) ;; maybe use hooks to disable for some major modes 
 
 ;;;;; yasnippet
 ;; Avoid using snippet keywords that might trigger expansion by company-mode or similar.
@@ -492,8 +492,7 @@
               (local-set-key (vector '(meta s)) 'nonincremental-repeat-search-forward)
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
 ;;              (local-set-key (vector '(control ?:)) 'comment-dwim)
-;; 	      (company-mode) ;; Is this needed if ess-use-company is set?
-	      (yas-minor-mode-on)
+ 	      (company-mode 1) ;; Is this needed if ess-use-company is set?
               (font-lock-mode t)
 	      (electric-pair-local-mode)
               (setq truncate-lines                 t
@@ -504,6 +503,7 @@
 
 (add-hook 'inferior-ess-mode-hook
 	  #'(lambda()
+          (company-mode 1)
 	  (electric-pair-local-mode)
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
@@ -574,7 +574,7 @@
 (require 'markdown-mode)
 (add-hook 'markdown-mode-hook
 	  #'(lambda ()
-;;	      (yas-minor-mode-on)
+	      (company-mode nil)
 	      ))
 
 ;;;; msb ;;;; mouse buffer menu minor mode
