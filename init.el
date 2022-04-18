@@ -325,28 +325,6 @@
  	  #'(lambda ()
  	      (hl-line-mode 1)
  	      (message "ibuffer-hook done")))
-
-;; (setq ibuffer-saved-filter-groups
-;;       ;; Put project groups first.
-;;       ;; Figure out a way that a buffer can belong to more than one group.
-;;   (quote (("default"      
-;;             ("TSS Project"
-;; 	     (filename . "C:/DATA/braze/01 - work in progress/10 - Consulting/07-southport-school/"))
-;; 	    ("Data Work" (or
-;; 			  (mode . ess-mode)
-;; 			  (filename . "(R run)")))
-;;             ("Org" ;; all org-related buffers
-;;               (mode . org-mode))
-;;             ("ELisp" ;; all org-related buffers
-;;               (mode . emacs-lisp-mode))
-;; 	    ("Magit"
-;; 	     (mode . magit-mode))
-;; 	    ("Help" (or
-;; 		     (name . "\*Help\*")
-;; 		     (name . "\*Apropos\*")
-;; 		     (name . "\*info\*")))
-;; 	    ))))
-
   
 (add-hook 'ibuffer-mode-hook
 	  (lambda ()
@@ -493,7 +471,7 @@
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
 ;;              (local-set-key (vector '(control ?:)) 'comment-dwim)
  	      (company-mode 1) ;; Is this needed if ess-use-company is set?
-              (font-lock-mode t)
+              (font-lock-mode)
 	      (electric-pair-local-mode)
               (setq truncate-lines                 t
 		    ess-nuke-trailing-whitespace-p nil ;; leaving trailing whitespace alone. Important for Rmarkdown files.
@@ -503,8 +481,9 @@
 
 (add-hook 'inferior-ess-mode-hook
 	  #'(lambda()
-          (company-mode 1)
-	  (electric-pair-local-mode)
+	      (company-mode 1)
+	      (font-lock-mode)
+	      (electric-pair-local-mode)
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
 
@@ -563,7 +542,7 @@
  	      (setq font-lock-maximum-decoration t)        ; Maximum colors
  	      (set-face-foreground font-lock-comment-face "darkcyan")
  	      (set-face-foreground font-lock-constant-face "darkred")))
-(global-font-lock-mode t)	      ; Turn on font-lock in all modes that support it
+(global-font-lock-mode)	      ; Turn on font-lock in all modes that support it
 
 ;; ;; ;;;; magit-mode ;;;
 ;; (setenv "GIT_ASKPASS" "git-gui--askpass")
