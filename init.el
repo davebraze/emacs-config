@@ -140,14 +140,17 @@
 ;; (- (display-pixel-height) 65)
 (setq default-frame-alist
       '((top . 0)
-	(left . 101)
+	(left . 0)
  	(width . (text-pixels . 1100))
-	(height . (text-pixels . 1370))
+	(height . (text-pixels . 1335))
  	(cursor-color . "blue")
  	(cursor-type . box)
  	(foreground-color . "black")
  	(background-color . "ivory")
-	(font . "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")))
+	;; (font . "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1") 
+	(font . "-outline-JetBrains Mono-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1") ;; I don't know how to turn on ligatures
+	)
+      )
 
 ;; Consider adapting this to set background color of UNselected windows.
 ;; (defun highlight-selected-window ()
@@ -471,7 +474,7 @@
 	      (local-set-key (vector '(control =)) 'ess-cycle-assign)
 ;;              (local-set-key (vector '(control ?:)) 'comment-dwim)
  	      (company-mode 1) ;; Is this needed if ess-use-company is set?
-              (font-lock-mode)
+              (font-lock-mode 1)
 	      (electric-pair-local-mode)
               (setq truncate-lines                 t
 		    ess-nuke-trailing-whitespace-p nil ;; leaving trailing whitespace alone. Important for Rmarkdown files.
@@ -482,7 +485,7 @@
 (add-hook 'inferior-ess-mode-hook
 	  #'(lambda()
 	      (company-mode 1)
-	      (font-lock-mode)
+	      (font-lock-mode 1)
 	      (electric-pair-local-mode)
 	  (local-set-key (vector '(control =)) 'ess-cycle-assign)
 	  (message "ess-inferior-mode-hook done")))
