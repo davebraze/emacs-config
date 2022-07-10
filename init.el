@@ -545,7 +545,7 @@
  	      (setq font-lock-maximum-decoration t)        ; Maximum colors
  	      (set-face-foreground font-lock-comment-face "darkcyan")
  	      (set-face-foreground font-lock-constant-face "darkred")))
-(global-font-lock-mode)	      ; Turn on font-lock in all modes that support it
+(global-font-lock-mode t)	      ; Turn on font-lock in all modes that support it
 
 ;; ;; ;;;; magit-mode ;;;
 ;; (setenv "GIT_ASKPASS" "git-gui--askpass")
@@ -688,7 +688,8 @@
      ("courier" "Lucida Sans Typewriter" "fixed")
      ("Sans Serif" "helv" "helvetica" "arial" "fixed")
      ("helv" "helvetica" "arial" "fixed"))))
- '(global-font-lock-mode nil)
+ '(font-lock-global-modes (quote (not speedbar-mode)))
+ '(global-font-lock-mode t)
  '(package-check-signature (quote allow-unsigned))
  '(package-selected-packages
    (quote
